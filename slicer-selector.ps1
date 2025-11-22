@@ -44,12 +44,14 @@ function Main {
     $spacing = 20
 
     foreach ($slicer in $slicers) {
-        $name = $slicer.Keys | Select-Object -First 1
-        $exe = $slicer[$name]
 
-        # Load icon from exe
+        # Extract name/exe path
+        $name = $slicer.Keys | Select-Object -First 1
+        $exePath = $slicer[$name]
+
+        # Extract icon
         try {
-            $icon = [System.Drawing.Icon]::ExtractAssociatedIcon($exe)
+            $icon = [System.Drawing.Icon]::ExtractAssociatedIcon($exePath)
             $bmp = $icon.ToBitmap()
         } catch {
             $bmp = New-Object System.Drawing.Bitmap $buttonWidth, $buttonHeight
@@ -58,7 +60,7 @@ function Main {
             $g.Dispose()
         }
 
-        # Create button
+        # Make the button
         $btn = New-Object System.Windows.Forms.Button
         $btn.Size = New-Object System.Drawing.Size($buttonWidth, $buttonHeight)
         $btn.Location = New-Object System.Drawing.Point($x, $y)
@@ -66,17 +68,18 @@ function Main {
         $btn.Text = ""
         $btn.FlatStyle = 'Flat'
 
-        # Launch slicer on click
-        $btn.Add_Click({
-            foreach ($file in $Files) {
-                try {
-                    & "$exe" "$file"
-                } catch {
-                    [System.Windows.Forms.MessageBox]::Show("Failed to start $exe`n$($_.Exception.Message)")
-                }
+        # Freeze the current exe path inside a closure
+        $exeCopy = $exePath
+        $filesCopy = $Files
+
+        $handler = {
+            foreach ($file in $filesCopy) {
+                & $exeCopy $file
             }
             $form.Close()
-        })
+        }.GetNewClosure()   # <<< THIS is the fix.
+
+        $btn.Add_Click($handler)
 
         $form.Controls.Add($btn)
         $x += $buttonWidth + $spacing
