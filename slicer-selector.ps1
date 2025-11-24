@@ -77,7 +77,7 @@ function Main {
                 & $exeCopy $file
             }
             $form.Close()
-        }.GetNewClosure()   # <<< THIS is the fix.
+        }.GetNewClosure()
 
         $btn.Add_Click($handler)
 
@@ -92,3 +92,4 @@ function Main {
 
 # --- Launch ---
 $null = Main $Files
+
