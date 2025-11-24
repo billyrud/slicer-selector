@@ -9,7 +9,8 @@ The supported slicers are:
 * Orca Slicer
 
 # Step 1 - Download
-Save the exe or download the ps1 and compile it to an exe using ps2exe with the -noConsole parameter
+Save the exe or alternativly download the ps1.
+To compile the ps1 to an exe use the following cmdlet: Invoke-PS2EXE .\slicer-selector.ps1 .\slicer-selector.exe -iconFile .\slicer-selector.ico -noConsole 
 
 # Step 2 - Set as Default
 1) Open the "Default Apps" settings utility in Windows
